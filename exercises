@@ -1,0 +1,47 @@
+const exercisesDB = [];
+
+function addExercise(name, weight, reps, sets, date) {
+    const exercise = { name, weight, reps, sets, date };
+    exercisesDB.push(exercise);
+    saveToLocalStorage();
+    renderExercises();
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem("exercises", JSON.stringify(exercisesDB));
+}
+
+function loadFromLocalStorage() {
+    const data = localStorage.getItem("exercises");
+    if (data) {
+        exercisesDB.push(...JSON.parse(data));
+    }
+    renderExercises();
+}
+
+function renderExercises() {
+    const list = document.getElementById("exercise-list");
+    list.innerHTML = "";
+    exercisesDB.forEach((exercise, index) => {
+        const item = document.createElement("li");
+        item.textContent = `${exercise.date} - ${exercise.name}: ${exercise.weight}kg, ${exercise.reps} reps, ${exercise.sets} sets`;
+        list.appendChild(item);
+    });
+    updateCharts();
+}
+
+function updateCharts() {
+    // Graphique avec Chart.js
+}
+
+document.getElementById("add-exercise").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const name = document.getElementById("name").value;
+    const weight = document.getElementById("weight").value;
+    const reps = document.getElementById("reps").value;
+    const sets = document.getElementById("sets").value;
+    const date = document.getElementById("date").value;
+    addExercise(name, weight, reps, sets, date);
+});
+
+window.onload = loadFromLocalStorage;
