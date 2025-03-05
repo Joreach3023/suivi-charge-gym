@@ -23,7 +23,7 @@
             gap: 10px;
             margin-bottom: 20px;
         }
-        input, button {
+        input, select, button {
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ddd;
@@ -51,6 +51,12 @@
             border-radius: 5px;
             margin-bottom: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .exercise-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 10px;
         }
         .delete-btn {
             background: #ff4d4d;
@@ -83,19 +89,22 @@
 <body>
     <h1>Suivi des Charges</h1>
     <form id="add-exercise">
-        <input list="exercise-list" id="name" placeholder="Nom de l'exercice" required>
-        <datalist id="exercise-list">
-            <option value="Bench Press">
-            <option value="Squat">
-            <option value="Deadlift">
-            <option value="Overhead Press">
-            <option value="Barbell Row">
-            <option value="Pull-ups">
-            <option value="Dips">
-            <option value="Lunges">
-            <option value="Leg Press">
-            <option value="Biceps Curl">
-        </datalist>
+        <!-- Liste déroulante pour choisir un exercice -->
+        <select id="exercise-select" required>
+            <option value="" disabled selected>Choisir un exercice</option>
+            <option value="Bench Press">Bench Press</option>
+            <option value="Squat">Squat</option>
+            <option value="Deadlift">Deadlift</option>
+            <option value="Overhead Press">Overhead Press</option>
+            <option value="Barbell Row">Barbell Row</option>
+            <option value="Pull-ups">Pull-ups</option>
+            <option value="Dips">Dips</option>
+            <option value="Lunges">Lunges</option>
+            <option value="Leg Press">Leg Press</option>
+            <option value="Biceps Curl">Biceps Curl</option>
+        </select>
+        <!-- Champ de saisie manuelle pour un exercice non listé -->
+        <input type="text" id="name" placeholder="Ou saisir un exercice manuellement">
         <input type="number" id="weight" placeholder="Poids (kg)" required>
         <input type="number" id="reps" placeholder="Répétitions" required>
         <input type="number" id="sets" placeholder="Séries" required>
@@ -109,6 +118,20 @@
     
     <script>
         const exercisesDB = [];
+
+        // Tableau d'objets pour associer chaque exercice à une image
+        const exerciseImages = {
+            "Bench Press": "https://via.placeholder.com/50",
+            "Squat": "https://via.placeholder.com/50",
+            "Deadlift": "https://via.placeholder.com/50",
+            "Overhead Press": "https://via.placeholder.com/50",
+            "Barbell Row": "https://via.placeholder.com/50",
+            "Pull-ups": "https://via.placeholder.com/50",
+            "Dips": "https://via.placeholder.com/50",
+            "Lunges": "https://via.placeholder.com/50",
+            "Leg Press": "https://via.placeholder.com/50",
+            "Biceps Curl": "https://via.placeholder.com/50"
+        };
 
         function addExercise(name, weight, reps, sets, date, notes) {
             const volume = weight * reps * sets;
@@ -144,7 +167,11 @@
                       .forEach((exercise, index) => {
                 const item = document.createElement("li");
                 item.className = "exercise-item";
-                item.innerHTML = `${exercise.date} - ${exercise.name}: ${exercise.weight}kg, ${exercise.reps} reps, ${exercise.sets} sets, Volume: ${exercise.volume} <em>${exercise.notes || ''}</em> <button class='delete-btn' onclick='deleteExercise(${index})'>X</button>`;
+                // Ajouter l'image de l'exercice
+                const img = document.createElement("img");
+                img.src = exerciseImages[exercise.name] || "https://via.placeholder.com/50"; // Image par défaut si non trouvée
+                item.appendChild(img);
+                item.innerHTML += `${exercise.date} - ${exercise.name}: ${exercise.weight}kg, ${exercise.reps} reps, ${exercise.sets} sets, Volume: ${exercise.volume} <em>${exercise.notes || ''}</em> <button class='delete-btn' onclick='deleteExercise(${index})'>X</button>`;
                 list.appendChild(item);
             });
             updateCharts();
@@ -198,7 +225,10 @@
 
         document.getElementById("add-exercise").addEventListener("submit", function(event) {
             event.preventDefault();
-            const name = document.getElementById("name").value;
+            const select = document.getElementById("exercise-select");
+            const manualInput = document.getElementById("name");
+            // Utiliser la valeur de la liste déroulante si elle est sélectionnée, sinon utiliser la saisie manuelle
+            const name = select.value ? select.value : manualInput.value;
             const weight = document.getElementById("weight").value;
             const reps = document.getElementById("reps").value;
             const sets = document.getElementById("sets").value;
