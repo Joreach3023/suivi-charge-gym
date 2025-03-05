@@ -8,7 +8,8 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         form { margin-bottom: 20px; }
-        canvas { max-width: 600px; margin: auto; }
+        canvas { max-width: 600px; margin: auto; display: block; }
+        .chart-container { margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -55,11 +56,10 @@
         <button type="submit">Ajouter</button>
     </form>
     <ul id="exercise-list"></ul>
-    <canvas id="progressChart"></canvas>
+    <div id="charts-container"></div>
     
     <script>
         const exercisesDB = [];
-        let chartInstance = null;
 
         function addExercise(name, weight, reps, sets, date) {
             const exercise = { name, weight, reps, sets, date };
@@ -92,24 +92,38 @@
         }
 
         function updateCharts() {
-            const ctx = document.getElementById('progressChart').getContext('2d');
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-            const labels = exercisesDB.map(ex => ex.date);
-            const data = exercisesDB.map(ex => ex.weight);
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Évolution des charges',
-                        data: data,
-                        borderColor: 'blue',
-                        borderWidth: 2,
-                        fill: false
-                    }]
+            const chartsContainer = document.getElementById("charts-container");
+            chartsContainer.innerHTML = "";
+            const groupedExercises = {};
+            exercisesDB.forEach(ex => {
+                if (!groupedExercises[ex.name]) {
+                    groupedExercises[ex.name] = [];
                 }
+                groupedExercises[ex.name].push(ex);
+            });
+            
+            Object.keys(groupedExercises).forEach(exerciseName => {
+                const canvas = document.createElement("canvas");
+                canvas.id = `chart-${exerciseName.replace(/\s+/g, '-')}`;
+                chartsContainer.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                const labels = groupedExercises[exerciseName].map(ex => ex.date);
+                const data = groupedExercises[exerciseName].map(ex => ex.weight);
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `Évolution des charges - ${exerciseName}`,
+                            data: data,
+                            borderColor: 'blue',
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    }
+                });
             });
         }
 
@@ -127,4 +141,3 @@
     </script>
 </body>
 </html>
-
