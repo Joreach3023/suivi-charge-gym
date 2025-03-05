@@ -20,6 +20,11 @@
             <option value="Deadlift">Deadlift</option>
             <option value="Overhead Press">Overhead Press</option>
             <option value="Barbell Row">Barbell Row</option>
+            <option value="Pull-ups">Pull-ups</option>
+            <option value="Dips">Dips</option>
+            <option value="Lunges">Lunges</option>
+            <option value="Leg Press">Leg Press</option>
+            <option value="Biceps Curl">Biceps Curl</option>
         </select>
         <select id="weight" required>
             <option value="20">20 kg</option>
@@ -31,9 +36,21 @@
             <option value="80">80 kg</option>
             <option value="90">90 kg</option>
             <option value="100">100 kg</option>
+            <option value="110">110 kg</option>
+            <option value="120">120 kg</option>
         </select>
-        <input type="number" id="reps" placeholder="Répétitions" required>
-        <input type="number" id="sets" placeholder="Séries" required>
+        <select id="reps" required>
+            <option value="5">5</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="15">15</option>
+        </select>
+        <select id="sets" required>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
         <input type="date" id="date" required>
         <button type="submit">Ajouter</button>
     </form>
