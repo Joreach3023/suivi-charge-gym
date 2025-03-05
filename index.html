@@ -14,8 +14,24 @@
 <body>
     <h1>Suivi des Charges</h1>
     <form id="add-exercise">
-        <input type="text" id="name" placeholder="Nom de l'exercice" required>
-        <input type="number" id="weight" placeholder="Poids (kg)" required>
+        <select id="name" required>
+            <option value="Bench Press">Bench Press</option>
+            <option value="Squat">Squat</option>
+            <option value="Deadlift">Deadlift</option>
+            <option value="Overhead Press">Overhead Press</option>
+            <option value="Barbell Row">Barbell Row</option>
+        </select>
+        <select id="weight" required>
+            <option value="20">20 kg</option>
+            <option value="30">30 kg</option>
+            <option value="40">40 kg</option>
+            <option value="50">50 kg</option>
+            <option value="60">60 kg</option>
+            <option value="70">70 kg</option>
+            <option value="80">80 kg</option>
+            <option value="90">90 kg</option>
+            <option value="100">100 kg</option>
+        </select>
         <input type="number" id="reps" placeholder="Répétitions" required>
         <input type="number" id="sets" placeholder="Séries" required>
         <input type="date" id="date" required>
@@ -26,6 +42,7 @@
     
     <script>
         const exercisesDB = [];
+        let chartInstance = null;
 
         function addExercise(name, weight, reps, sets, date) {
             const exercise = { name, weight, reps, sets, date };
@@ -49,7 +66,7 @@
         function renderExercises() {
             const list = document.getElementById("exercise-list");
             list.innerHTML = "";
-            exercisesDB.forEach((exercise, index) => {
+            exercisesDB.forEach((exercise) => {
                 const item = document.createElement("li");
                 item.textContent = `${exercise.date} - ${exercise.name}: ${exercise.weight}kg, ${exercise.reps} reps, ${exercise.sets} sets`;
                 list.appendChild(item);
@@ -59,9 +76,12 @@
 
         function updateCharts() {
             const ctx = document.getElementById('progressChart').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
             const labels = exercisesDB.map(ex => ex.date);
             const data = exercisesDB.map(ex => ex.weight);
-            new Chart(ctx, {
+            chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -90,3 +110,4 @@
     </script>
 </body>
 </html>
+
