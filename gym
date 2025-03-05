@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des Charges - Gym</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        form { margin-bottom: 20px; }
+        canvas { max-width: 600px; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1>Suivi des Charges</h1>
+    <form id="add-exercise">
+        <input type="text" id="name" placeholder="Nom de l'exercice" required>
+        <input type="number" id="weight" placeholder="Poids (kg)" required>
+        <input type="number" id="reps" placeholder="Répétitions" required>
+        <input type="number" id="sets" placeholder="Séries" required>
+        <input type="date" id="date" required>
+        <button type="submit">Ajouter</button>
+    </form>
+    <ul id="exercise-list"></ul>
+    <canvas id="progressChart"></canvas>
+    
+    <script>
+        const exercisesDB = [];
+
+        function addExercise(name, weight, reps, sets, date) {
+            const exercise = { name, weight, reps, sets, date };
+            exercisesDB.push(exercise);
+            saveToLocalStorage();
+            renderExercises();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem("exercises", JSON.stringify(exercisesDB));
+        }
+
+        function loadFromLocalStorage() {
+            const data = localStorage.getItem("exercises");
+            if (data) {
+                exercisesDB.push(...JSON.parse(data));
+            }
+            renderExercises();
+        }
+
+        function renderExercises() {
+            const list = document.getElementById("exercise-list");
+            list.innerHTML = "";
+            exercisesDB.forEach((exercise, index) => {
+                const item = document.createElement("li");
+                item.textContent = `${exercise.date} - ${exercise.name}: ${exercise.weight}kg, ${exercise.reps} reps, ${exercise.sets} sets`;
+                list.appendChild(item);
+            });
+            updateCharts();
+        }
+
+        function updateCharts() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            const labels = exercisesDB.map(ex => ex.date);
+            const data = exercisesDB.map(ex => ex.weight);
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Évolution des charges',
+                        data: data,
+                        borderColor: 'blue',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                }
+            });
+        }
+
+        document.getElementById("add-exercise").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const weight = document.getElementById("weight").value;
+            const reps = document.getElementById("reps").value;
+            const sets = document.getElementById("sets").value;
+            const date = document.getElementById("date").value;
+            addExercise(name, weight, reps, sets, date);
+        });
+
+        window.onload = loadFromLocalStorage;
+    </script>
+</body>
+</html>
